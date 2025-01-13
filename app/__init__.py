@@ -1,8 +1,6 @@
 from flask import Flask
-from pymongo import MongoClient
+from app.routes import user_routes
 def create_app():
     app = Flask(__name__)
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['app']
-    users_collection = db['users']
+    app.register_blueprint(user_routes)
     return app
