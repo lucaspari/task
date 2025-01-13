@@ -1,10 +1,9 @@
 from bson import ObjectId
 from flask import Blueprint, request,jsonify
 from pymongo import MongoClient
-from app.models.User import User
 from parser import parse_user_data_to_db, parse_user_data_to_server 
 user_routes = Blueprint("user_routes", __name__)
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient('mongodb://mongodb:27017/')
 db = client['app']
 users_collection = db['users']
 
