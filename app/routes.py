@@ -1,7 +1,8 @@
-from dataclasses import asdict
 from bson import ObjectId
 from flask import Blueprint, request,jsonify
 from pymongo import MongoClient
+from app.models.User import User
+from parser import parse_user_data_to_db, parse_user_data_to_server 
 user_routes = Blueprint("user_routes", __name__)
 client = MongoClient('mongodb://localhost:27017/')
 db = client['app']
@@ -9,20 +10,20 @@ users_collection = db['users']
 
 
 
+
 @user_routes.route("/users", methods=["GET"])
 def get_users():
     users = list(users_collection.find())
-    for user in users:
-        user["_id"] = str(user["_id"])
-    return jsonify(users)
+    user_objects = [parse_user_data_to_server(user) for user in users]
+    return jsonify([user.__dict__ for user in user_objects]) 
 
 @user_routes.route("/users/<user_id>", methods=["GET"])
 def get_user(user_id):
     user_data = users_collection.find_one({"_id": ObjectId(user_id)})
     if not user_data:
         return jsonify({"error": "User not found"}), 404
-    user_data["_id"] = str(user_data["_id"])
-    return jsonify(user_data)
+    user = parse_user_data_to_server(user_data)
+    return jsonify(user.__dict__)
 
 @user_routes.route("/users", methods=["POST"])
 def create_user():
@@ -32,33 +33,31 @@ def create_user():
         if 'users' not in data:
             return jsonify({"error": "Invalid data format"}), 400
         
-        result = users_collection.insert_many(data['users'])
+        user_objects = [parse_user_data_to_db(user_data) for user_data in data['users']]
+        result = users_collection.insert_many([user.__dict__ for user in user_objects])
         return jsonify({"message": "Users added successfully", "ids": [str(id) for id in result.inserted_ids]}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 @user_routes.route("/users/<user_id>", methods=["PUT"])
 def update_user(user_id):
-    data = request.json
     try:
-        updated_fields = {}
-        if "username" in data:
-            updated_fields["username"] = data["username"]
-        if "password" in data:
-            updated_fields["password"] = data["password"]
-        if "roles" in data:
-            updated_fields["roles"] = data["roles"]
-        if "preferences" in data:
-            updated_fields["preferences"] = data["preferences"]
-        if "active" in data:
-            updated_fields["active"] = data["active"]
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        user_data = parse_user_data_to_db(data)
         result = users_collection.update_one(
-            {"_id": ObjectId(user_id)}, {"$set": updated_fields}
+            {"_id": ObjectId(user_id)},
+            {"$set": user_data.__dict__}
         )
+        
         if result.matched_count == 0:
             return jsonify({"error": "User not found"}), 404
-        return jsonify({"message": "User updated"})
+        
+        return jsonify({"message": "User updated successfully"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), 500
 
 @user_routes.route("/users/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
