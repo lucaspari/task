@@ -1,5 +1,5 @@
 from bson import ObjectId
-from flask import Blueprint, request,jsonify
+from flask import Blueprint, request, jsonify
 from pymongo import MongoClient
 from parser import parse_user_data_to_db, parse_user_data_to_server 
 user_routes = Blueprint("user_routes", __name__)
@@ -38,8 +38,8 @@ def create_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@user_routes.route("/users/<user_id>", methods=["PUT"])
-def update_user(user_id):
+@user_routes.route("/users/<username>", methods=["PUT"])
+def update_user(username):
     try:
         data = request.get_json()
         if not data:
@@ -47,7 +47,7 @@ def update_user(user_id):
         
         user_data = parse_user_data_to_db(data)
         result = users_collection.update_one(
-            {"_id": ObjectId(user_id)},
+            {"username": username},
             {"$set": user_data.__dict__}
         )
         
