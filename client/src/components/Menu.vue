@@ -1,65 +1,53 @@
 <template>
-  <v-table theme="dark">
-    <thead>
-      <tr>
-        <th class="text-left">Username</th>
-        <th class="text-left">Timezone</th>
-        <th class="text-left">Is Active?</th>
-        <th class="text-left">Last Update At</th>
-        <th class="text-left">Created At</th>
-        <th class="text-left">Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </v-table>
+  <v-data-table
+    :headers="headers"
+    :items="users"
+    :items-per-page="5"
+    class="elevation-1"
+    :footer-props="{
+      'items-per-page-options': [5, 10, 15],
+    }"
+  >
+    <template v-slot:top>
+      <v-toolbar flat>
+        <v-toolbar-title>Users</v-toolbar-title>
+      </v-toolbar>
+    </template>
+    <template v-slot:item.actions="{ item }">
+      <v-btn class="mr-2" color="primary">Edit</v-btn>
+      <v-btn color="error">Delete</v-btn>
+    </template>
+  </v-data-table>
 </template>
+
 <script lang="ts">
-export default {
+import axios from "axios";
+import { defineComponent } from "vue";
+
+export default defineComponent({
   data() {
     return {
-      desserts: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-        },
-        {
-          name: "Donut",
-          calories: 452,
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-        },
+      users: [],
+      headers: [
+        { text: "Username", value: "username" },
+        { text: "Timezone", value: "preferences" },
+        { text: "Is Active?", value: "active" },
+        { text: "Last Update At", value: "update_ts" },
+        { text: "Created At", value: "created_ts" },
+        { text: "Actions", value: "actions", sortable: false },
       ],
     };
   },
-};
+  mounted() {
+    this.fetchUsers();
+  },
+  methods: {
+    async fetchUsers() {
+      axios.get("http://localhost:8000/users").then((response) => {
+        console.log(response.data);
+        this.users = response.data;
+      });
+    },
+  },
+});
 </script>

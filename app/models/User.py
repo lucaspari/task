@@ -9,4 +9,5 @@ class User:
 	roles: list
 	preferences: UserPreferences
 	created_ts: float
+	update_ts: float
 	active: bool = True

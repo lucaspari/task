@@ -1,7 +1,9 @@
 from app.models.User import User
 from app.models.UserPreferences import UserPreferences
+from datetime import datetime
 
 def parse_user_data_to_db(data: dict) -> User:
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     user = User(
         username=data.get('user', ''),  
         password=data.get('password', ''),  
@@ -13,6 +15,7 @@ def parse_user_data_to_db(data: dict) -> User:
         preferences=UserPreferences(data.get('user_timezone')).timezone,  
         active=True if data.get('is_user_active') else False,  
         created_ts=data.get('created_at', ''),  
+        update_ts=current_time
     )
     return user
 
@@ -28,5 +31,6 @@ def parse_user_data_to_server(data: dict) -> User:
         preferences=data.get('preferences'),  
         active=True if data.get('active', False) else False,  
         created_ts=data.get('created_ts', ''),  
+        update_ts=data.get('update_ts', '')
     )
     return user
