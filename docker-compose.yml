@@ -7,19 +7,19 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./:/data/db
+      - mongodb_data:/data/db
     restart: always
   app:
     build: .
     container_name: app
+    volumes:
+      - .:/app
     networks:
       - app_network
     ports:
       - "8000:5000"
     depends_on:
       - mongodb
-    volumes:
-      - ./:/app
 volumes:
   mongodb_data:
 networks:
