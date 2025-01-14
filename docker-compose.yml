@@ -7,7 +7,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - ./:/data/db
     restart: always
   app:
     build: .
@@ -18,6 +18,8 @@ services:
       - "8000:5000"
     depends_on:
       - mongodb
+    volumes:
+      - ./:/app
 volumes:
   mongodb_data:
 networks:
