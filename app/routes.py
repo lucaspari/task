@@ -58,9 +58,10 @@ def update_user(username):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@user_routes.route("/users/<user_id>", methods=["DELETE"])
-def delete_user(user_id):
-    result = users_collection.delete_one({"_id": ObjectId(user_id)})
+@user_routes.route("/users/<username>", methods=["DELETE"])
+def delete_user(username):
+    print(username)
+    result = users_collection.delete_one({"username": username})
     if result.deleted_count == 0:
         return jsonify({"error": "User not found"}), 404
     return jsonify({"message": "User deleted"})
