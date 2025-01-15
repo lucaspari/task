@@ -5,6 +5,9 @@
     density="compact"
     item-key="name"
   >
+    <template #item.username="{ item }">
+      <a href="">{{ item.username }}</a>
+    </template>
     <template v-slot:item.actions="{ item }">
       <v-icon class="me-2" size="small" @click="editItem(item)">
         mdi-pencil
