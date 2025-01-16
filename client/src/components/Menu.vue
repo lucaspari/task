@@ -22,7 +22,7 @@
       </v-toolbar>
     </template>
     <template #[`item.username`]="{ item }">
-      <a @click="redirectToUser(item)">{{ item.username }}</a>
+      <p style="text-decoration: underline;cursor : pointer;" @click="redirectToUser(item)">{{ item.username }}</p>
     </template>
     <template #[`item.actions`]="{ item }">
       <v-icon
@@ -135,7 +135,16 @@ export default {
       this.dialogDelete = false;
     },
     create(user){
-      console.log(user);
+      this.setUserRole(user);
+      axios
+        .post(
+          "http://localhost:8000/users",
+          {"users":[user]}
+        )
+        .then(() => {
+          this.fetchUsers();
+          this.close();
+        });
     },
     save() {
       this.setUserRole(this.editedUser);
@@ -159,7 +168,7 @@ export default {
     setUserRole(user ) {
       for (const role of user.roles) {
         if (role === "admin") {
-          this.editedUser.is_user_admin = true;
+          user.is_user_admin = true;
         }
         if (role === "manager") {
           user.is_user_manager = true;
