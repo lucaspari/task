@@ -159,10 +159,11 @@ export default {
         });
     },
     redirectToUser(item ) {
+      console.log(item);
       this.$router.push({
         name: "details",
         params: { username: item.username },
-        query: { active: item.active, preferences: item.preferences},
+        query: { active: item.active, preferences: item.preferences, roles: item.roles,created_ts:item.created_ts },
       });
     },
     setUserRole(user ) {
