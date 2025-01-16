@@ -15,8 +15,8 @@ To run the project, follow these steps:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/yourproject.git
-    cd yourproject
+    git clone https://github.com/lucaspari/task 
+    cd task 
     ```
 
 2. Start the services using Docker Compose:
