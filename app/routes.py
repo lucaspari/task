@@ -1,5 +1,5 @@
 from bson import ObjectId
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, json, request, jsonify
 from pymongo import MongoClient
 from parser import parse_user_data_to_db, parse_user_data_to_server 
 user_routes = Blueprint("user_routes", __name__)
@@ -7,9 +7,16 @@ client = MongoClient('mongodb://mongodb:27017/')
 db = client['app']
 users_collection = db['users']
 
+def insertUsers():
+    if users_collection.count_documents({}) == 0:
+        with open('app/users.json') as f:
+            users_data = json.load(f)
+            user_objects = [parse_user_data_to_db(user_data) for user_data in users_data['users']]
+            users_collection.insert_many([user.__dict__ for user in user_objects])
 
-
-
+insertUsers()
+        
+        
 @user_routes.route("/users", methods=["GET"])
 def get_users():
     users = list(users_collection.find())
