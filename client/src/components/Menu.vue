@@ -65,6 +65,7 @@ export default {
     return {
       users: [],
       dialogDelete: false,
+      dialogCreate:false,
       editedUser: {},
       originalUser: {},
       dialog: false,
@@ -161,6 +162,7 @@ export default {
           preferences: item.preferences,
           roles: item.roles,
           created_ts: item.created_ts,
+          lastUpdateAt : item.update_ts,
         },
       });
     },

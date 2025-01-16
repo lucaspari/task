@@ -1,17 +1,14 @@
-export interface UserPreferences {
-  timezone: string;
-}
 
 export interface User {
   username: string;
   password: string;
   joinedRoles: string;
   roles: string[];
-  preferences: UserPreferences;
+  preferences: string;
   is_user_admin: boolean;
   is_user_tester: boolean;
   is_user_manager: boolean;
-  created_ts: number;
+  created_ts: string;
   update_ts: number;
   active: boolean;
 }

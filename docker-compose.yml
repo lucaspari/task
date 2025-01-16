@@ -20,6 +20,15 @@ services:
       - "8000:5000"
     depends_on:
       - mongodb
+  client:
+    build: ./client
+    container_name: client
+    networks:
+      - app_network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
 volumes:
   mongodb_data:
 networks:

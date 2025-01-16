@@ -12,6 +12,19 @@
         <p>{{ active }}</p>
         <span><b>Preferences</b></span>
         <p>{{ preferences }}</p>
+        <span><b>Roles</b></span>
+        <ul>
+          <p
+            v-for="role in roles"
+            :key="role || ''"
+          >
+            {{ role }}
+          </p>
+        </ul>
+        <span><b>Created At</b></span>
+        <p>{{ created_ts }}</p>
+        <span><b>Update At</b></span>
+        <p>{{ update_ts }}</p>
       </v-card-text>
       <v-card-actions>
         <v-btn
@@ -41,19 +54,21 @@
   />
 </template>
 
-<script>
+<script lang="js">
 import axios from "axios";
 
 export default {
   name: "User",
   data() {
     return {
-      username: this.$route.params.username,
+      username: this.$route.params.username ,
       active: this.$route.query.active,
       preferences: this.$route.query.preferences,
       created_ts : this.$route.query.created_ts,
       roles : this.$route.query.roles,
-      editedUser: {},
+      update_ts : this.$route.query.lastUpdateAt
+      ,
+      editedUser: {} ,
       dialog: false,
       dialogDelete: false,
     };
@@ -68,11 +83,13 @@ export default {
   },
   methods: {
     editItem() {
-      this.editedUser = Object.assign({},{username: this.username,
-        active: this.active,
-        preferences: this.preferences,
-         created_ts: this.created_ts,
-          roles: this.roles});
+      this.editedUser = {
+        username: this.username,
+        active: JSON.parse(this.active) ,
+        preferences: String(this.preferences),
+        created_ts: String(this.created_ts),
+        roles: this.roles ,
+      };
       this.dialog = true;
     },
     deleteItem() {
@@ -99,7 +116,10 @@ export default {
       this.closeDelete();
       this.redirectToHome();
     },
-    setUserRole(user ) {
+    setUserRole(user) {
+      if(user.roles === undefined) {
+        return;
+      }
       for (const role of user.roles) {
         if (role === "admin") {
           user.is_user_admin = true;
@@ -114,7 +134,6 @@ export default {
     },
     redirectToHome() {
       this.$router.push({
-        name: "",
         path: "/",
       });
     },
